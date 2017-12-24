@@ -14,13 +14,15 @@ m_t = phi1*m_pt + (1-phi1)*g_t;
 v_t = phi2*v_pt + (1-phi2)*g_t.*g_t;
 global T0
 global GLOBAL
-if tau <= T0 && GLOBAL
+% if tau <= T0 && GLOBAL
+%     m_t_hat = m_t/(1-phi1^tau);
+%     v_t_hat = v_t/(1-phi2^tau);
+% else
+%     m_t_hat = m_t;
+%     v_t_hat = v_t;
+% end
     m_t_hat = m_t/(1-phi1^tau);
     v_t_hat = v_t/(1-phi2^tau);
-else
-    m_t_hat = m_t;
-    v_t_hat = v_t;
-end
 sr_t = sr_pt - eta * m_t_hat./(sqrt(v_t_hat)+eps(1));
 
 %sr_t = sr_pt - eta * m_t;%/(sqrt(v_t)+eps(1));

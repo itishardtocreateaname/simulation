@@ -86,13 +86,11 @@ for t = 2:T
     %
     pred_x = X(t-1,:)*F;
     
-    tic;
 	[sr, m_t, v_t, g_t] = Adam(sr, angle, m_t, v_t,t, freq_Y(t,:), pred_x, phi1, phi2, eta, pl, alpha_t, mag, beta1_t, beta2_t, neuron);
-    adam_time = toc;
-    adam_total_time = adam_total_time+adam_time;
     
     gt(t)=g_t;
     mt(t)=m_t;
+    vt(t)=v_t;
     
     sd = real2angle(sr, angle);    
 	
@@ -127,7 +125,7 @@ for t = 2:T
 %     weights2 = PP_likelihood_bychen(Y(t,:),lambda2,'bino');
     
     tic;
-    weights2 = PP_likelihood_bychen(testY(t,:),lambda2,'poisson');
+    weights2 = PP_likelihood_bychen(testY(t,:),lambda2,'bino');
 %     weights2 = PP_likelihood_bychen(freq_Y(t,:),lambda2,'poisson');
     likelihood_time = toc;
     likelihood_total_time = likelihood_total_time+likelihood_time*2;
@@ -140,21 +138,32 @@ for t = 2:T
     tmp = (lambda3>=1);
     lambda3(tmp) = 1-eps(1);
 %     weights3 = PP_likelihood_bychen(Y(t,:),lambda3,'bino');
-    weights3 = PP_likelihood_bychen(testY(t,:),lambda3,'poisson');
+    weights3 = PP_likelihood_bychen(testY(t,:),lambda3,'bino');
 %     weights3 = PP_likelihood_bychen(freq_Y(t,:),lambda3,'poisson');
+
+    weights2 = weights2(k);
 
     sw = weights3./weights2;
     sw = sw/sum(sw);
 
     PD(t) = sd;
     X(t,:) = sw*sx2;
+    
 
     kk = resample(sw);
     sx = sx2(kk,:);
     sw = 1/N*ones(1,N);
 
 end
-adam_total_time
-likelihood_total_time
-% plot(gt);hold on;
-% plot(mt);
+%%
+% adam_total_time
+% likelihood_total_time
+%     global period
+%     plot(gt/period);hold on;
+% %   hold on;
+% % %   plot(mt);plot(vt);
+% %   plot(gt);
+%   plot(mt./sqrt(vt));
+%   plot(ones(5000,1)*0);
+%   plot(ones(5000,1)*0);
+%  

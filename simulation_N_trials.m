@@ -10,14 +10,14 @@ global GLOBAL
 global MOD
 global period
 
-TRIAL = 9;
-PHI1 = 0.90;
-PHI2 = 0.9975;
-ETA = 0.0025;
-T0 = 200;
+TRIAL = 1;
+PHI1 = 0.97;
+PHI2 = 1-(1-PHI1)^2;
+ETA = 0.009;
+T0 = 20;
 GLOBAL = false;
 MOD = 0;
-period = 70;
+period = 15;
 
 %% calculate PDs && PXs
 tic;
@@ -50,6 +50,8 @@ ground_truth = ws(1,:)';
 
 MSE_theta = immse(PD_mean, ground_truth);
 MSE_x = immse(PX_mean, testX);
+MSE_x1 = immse(PX_mean(:,1), testX(:,1));
+MSE_x2 = immse(PX_mean(:,2), testX(:,2));
 
 CC_theta = corrcoef(PD_mean, ground_truth);
 CC_x = corrcoef(PX_mean, testX);
@@ -90,7 +92,7 @@ plot(PD_mean);
 % plot(PD_lambda);
 % plot(lambda(:,1));
 % plot(Y(:,1));
-
+%%
 if GLOBAL
     title(sprintf('T0=%d;Trial=%d;phi1=%.4f;phi2=%.4f;eta=%.4f',T0, TRIAL, PHI1,PHI2, ETA));
 else
@@ -111,6 +113,7 @@ end
 plot(testX);
 hold on;
 plot(PX_mean);
+%%
 if GLOBAL
     title(sprintf('T0=%d;Trial=%d;phi1=%.4f;phi2=%.4f;eta=%.4f',T0, TRIAL, PHI1,PHI2, ETA));
 else
@@ -146,3 +149,4 @@ end
 % hold on;
 % plot(PDs(:,i));
 % 
+% plot(PD_mean);hold on;plot(PDs);plot(ground_truth);

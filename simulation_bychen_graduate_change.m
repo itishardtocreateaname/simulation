@@ -40,38 +40,38 @@
 
 % ??????????????????2
 %??????????????????
-N = 1000;
-T = 10000;
+N = 5000/2;
+T = 5000;
 delta = 2*pi/N;
 t = 0:delta:2*pi*T/N-delta;
-R = 2.5e-5;
+R = 1e-3;
 T = length(t);
-X = 1*[cos(t)' sin(0.3*t)'];
+X = repmat((1-2*abs(cos(t).*sin(t)).^2)',1,2).*[cos(t)' sin(t)'];
 X = X + sqrt(R)*randn(T,2);
 
-freq = 1./[500 900 1000 1200];
-X2 = [0:freq(1):1 1-freq(1):-freq(1):-1];
-for i = 1:length(freq)
-   X2 = [X2 -1+freq(i):freq(i):1 1-freq(i):-freq(i):-1]; 
-end
-X2 = X2(1:10000);
-freq = 1./[1500 600 800 1000];
-X3 = [0:freq(1):1 1-freq(1):-freq(1):-1];
-for i = 1:length(freq)
-   X3 = [X3 -1+freq(i):freq(i):1 1-freq(i):-freq(i):-1]; 
-end
-X3 = X3(5001:15000);
-X2 = [X2;X3];
-
-R = 2.5e-5;
-T = length(X2);
-X2 = X2 + sqrt(R)*randn(2,T);
-X2 = X2(:,1:10000)';
-T = 20000;
-
-X = [X; X2];
-X(4000:8000) = X(4000:8000)*0.5;
-X(10000:14000) = X(10000:14000)*0.8;
+% freq = 1./[500 900 1000 1200];
+% X2 = [0:freq(1):1 1-freq(1):-freq(1):-1];
+% for i = 1:length(freq)
+%    X2 = [X2 -1+freq(i):freq(i):1 1-freq(i):-freq(i):-1]; 
+% end
+% X2 = X2(1:10000);
+% freq = 1./[1500 600 800 1000];
+% X3 = [0:freq(1):1 1-freq(1):-freq(1):-1];
+% for i = 1:length(freq)
+%    X3 = [X3 -1+freq(i):freq(i):1 1-freq(i):-freq(i):-1]; 
+% end
+% X3 = X3(5001:15000);
+% X2 = [X2;X3];
+% 
+% R = 2.5e-5;
+% T = length(X2);
+% X2 = X2 + sqrt(R)*randn(2,T);
+% X2 = X2(:,1:10000)';
+% T = 20000;
+% 
+% X = [X; X2];
+% X(4000:8000) = X(4000:8000)*0.5;
+% X(10000:14000) = X(10000:14000)*0.8;
 
 %%%%??????????????????
 % C = 8;
@@ -154,8 +154,9 @@ X(10000:14000) = X(10000:14000)*0.8;
 % Y = lambda*pl>rndnum;
 
 %??????????????????-V3
-mag = 2;
+mag = 1;
 pl = repmat([4e-2 4e-2 4.1e-2 3.1e-2 9e-2 9e-2 8.1e-2 6.1e-2 4e-2 4e-2 4.1e-2 3.1e-2 6e-2 6e-2 6.1e-2 6.1e-2],T,1);
+pl = repmat(exp(-1.2),T,16);
 alpha = 0.2;
 % chapt = [1 3000 6000 10000;
 %     1 4000 7000 10000;
@@ -167,7 +168,7 @@ alpha = 0.2;
 %     10/180*pi 120/180*pi 175/180*pi;
 %     45/180*pi 160/180*pi 20/180*pi;
 %     90/180*pi 170/180*pi 30/180*pi];
-chapt = [1 6000 12000 20000;
+chapt = [1 4000 12000 20000;
     1 8000 14000 20000;
     1 5000 13000 20000;
     1 10000 14000 20000;
@@ -183,10 +184,11 @@ chapt = [1 6000 12000 20000;
     1 8000 14000 20000;
     1 5000 13000 20000;
     1 10000 14000 20000];
+chapt = chapt./repmat([1 4 4 4],16,1);
 % w = [100/180*pi 40/180*pi 80/180*pi;
 %     10/180*pi 80/180*pi 70/180*pi;
 %     20/180*pi 80/180*pi 30/180*pi;];
-w = [45/180*pi 125/180*pi 80/180*pi;
+w = [90/180*pi 150/180*pi 30/180*pi;
     135/180*pi 135/180*pi 135/180*pi;
     225/180*pi 225/180*pi 225/180*pi;
     315/180*pi 315/180*pi 315/180*pi;
@@ -212,6 +214,7 @@ C = size(w,1);
 %     180/180*pi 180/180*pi 180/180*pi;
 %     360/180*pi 360/180*pi 360/180*pi;];
 %% graduate change 
+
 for i = 1:C
     if i > 1
         for j =1:size(chapt,2)-1
@@ -219,7 +222,7 @@ for i = 1:C
         end
     else %% graduate change for first neuron
         for j = chapt(i,1):chapt(i,2)
-            ws(i,j) = w(i,1)+(j-chapt(i,1))*(8/180*pi)/(chapt(i,2)-chapt(i,1));
+            ws(i,j) = w(i,1)-(j-chapt(i,1))*(8/180*pi)/(chapt(i,2)-chapt(i,1));
         end
         for j = chapt(i,2):chapt(i,3)
             ws(i,j) = w(i,2)-(j-chapt(i,2))*(4/180*pi)/(chapt(i,3)-chapt(i,2));
@@ -238,14 +241,14 @@ rndnum = rand(size(lambda));
 Y = lambda>rndnum;
 %% decode
 %train
-trainT = 1:20000;
+trainT = 1:T;
 tmpy = X(trainT(2:end),:);
 tmpx = X(trainT(1:(end-1)),:);
 F = (tmpx'*tmpx)\(tmpx'*tmpy);%%%% train F
 tmpz = tmpx*F; %% prediction
 R = var(tmpy-tmpz); %%%% train R
 
-testT = 1:20000;
+testT = 1:T;
 testX = X(testT,:);
 testY = Y(testT,:);
 % for ii = 12:4:16
@@ -278,7 +281,9 @@ neuron = 1;
 if GLOBAL
     p = 0.0001*T0; 
 else
-    p = 0.0001;
+%     p = 0.0001*20;
+    p=2/T;
+%     p=0.003;
 end
 
 
@@ -300,24 +305,39 @@ bot = min(ws(neuron,:));
 %for ii = 4:4:16
     ii = 16;
     subNeu = 1:ii;
+    subNeu = 1:4;
+    
     
     % frequency of Y(:,1)
     Y_bar = zeros(size(Y,1),C);
     global period
     
     for i = 1:T
-        if i <= period
-            Y_bar(i,:) = sum(Y(1:i,:),1);
+        if i > T-period
+            Y_bar(i,:) = sum(Y(T-2*(T-i+1)+1:T,:),1)/(T-i+1)*period/2;
+        elseif i < period
+            Y_bar(i,:) = sum(Y(1:2*i,:),1)/i*period/2;
         else 
-            Y_bar(i,:) = sum(Y(i-period:i,:),1);
+            Y_bar(i,:) = sum(Y(i-period+1:i+period,:),1)/2;
         end
     end
+    
+ 
+% for i = 1:T
+%     if i > T-2*period
+%         Y_bar(i,:) = sum(Y(T-2*period+1:T,:),1)/2;
+% 
+%     else 
+%         Y_bar(i,:) = sum(Y(i:i+2*period-1,:),1)/2;
+%     end
+% end
+      
 
-    [PX,PD] = PP_ParticleFilter_bychen2_modified(Y_bar(:,subNeu),testY(:,subNeu),testX(1,:),cov(testX),F,R,alpha,ws(subNeu,testT(1))',N,p,neuron,top,bot,pl(1,subNeu),mag);
+    [PX,PD] = PP_ParticleFilter_bychen2_modified(Y_bar(:,subNeu),testY(:,subNeu),testX(1,:),cov(testX),F,R,alpha,ws(subNeu,testT(1))',1000,p,neuron,top,bot,pl(1,subNeu),mag);
     %[PX,PD] = PP_ParticleFilter_bychen2_modified_global2(testY(:,subNeu),testX(1,:),cov(testX),F,R,alpha,ws(subNeu,testT(1))',1000,p,neuron,top,bot,pl(1,subNeu),mag);
-    %[PX,PD] = PP_ParticleFilter_bychen2_modified_global(testY(:,subNeu),testX(1,:),cov(testX),F,R,alpha,ws(subNeu,testT(1))',N,p,neuron,top,bot,pl(1,subNeu),mag);
+%     [PX,PD] = PP_ParticleFilter_bychen2_modified_global(testY(:,subNeu),testX(1,:),cov(testX),F,R,alpha,ws(subNeu,testT(1))',N,p,neuron,top,bot,pl(1,subNeu),mag);
     %[PX,PD] = PP_ParticleFilter_bychen2_modified(testY(:,subNeu),testX(1,:),cov(testX),F,R,alpha,ws(subNeu,testT(1))',N,p,neuron,top,bot,pl(1,subNeu),mag);
-    %[PX,PD] = PP_ParticleFilter_bychen2(testY(:,subNeu),testX(1,:),cov(testX),F,R,alpha,ws(subNeu,testT(1))',10000,p,neuron,top,bot,pl(1,subNeu),mag);
+%     [PX,PD] = PP_ParticleFilter_bychen2(testY(:,subNeu),testX(1,:),cov(testX),F,R,alpha,ws(subNeu,testT(1))',1000,p,neuron,top,bot,pl(1,subNeu),mag);
     %[PX,PD] = PP_ParticleFilter_bychen2_only_LW(testY(:,subNeu),testX(1,:),cov(testX),F,R,alpha,ws(subNeu,testT(1))',10000,p,neuron,top,bot,pl(1,subNeu),mag);
     %[CCadaptive, RMSEadaptive] = evaluate(PX,testX);
     %save(['data\data3\',num2str(ii),'Neu']);
